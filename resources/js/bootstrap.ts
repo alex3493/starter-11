@@ -10,3 +10,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 import './echo';
+
+declare global {
+    interface Window {
+        Pusher: any;
+        Echo: any;
+    }
+}
