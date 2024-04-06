@@ -127,14 +127,16 @@ class ChatController extends Controller
 
         $chat = $chat->load('users');
 
-        // TODO: when the last user leaves the chat we can delete it.
-        if ($chat->users->count() === 0) {
-            $chat->delete();
+        event(new ChatUpdated($chat));
 
-            event(new ChatDeleted($chat->id));
-        } else {
-            event(new ChatUpdated($chat));
-        }
+        //// TODO: when the last user leaves the chat we can delete it.
+        //if ($chat->users->count() === 0) {
+        //    $chat->delete();
+        //
+        //    event(new ChatDeleted($chat->id));
+        //} else {
+        //    event(new ChatUpdated($chat));
+        //}
 
         return $chat;
     }
