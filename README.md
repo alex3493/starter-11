@@ -8,6 +8,7 @@ TBC...
 ## How to install
 
 - Make sure you have Docker installed and running.
+- Make sure you have composer installed.
 - Clone the project and cd to project folder.
 - $> cp .env.example .env
 - $> composer install
