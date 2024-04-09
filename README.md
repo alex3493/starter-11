@@ -11,11 +11,11 @@ TBC...
 - Clone the project and cd to project folder.
 - $> cp .env.example .env
 - $> composer install
-- $> npm install
 - $> ./vendor/bin/sail up -d
 - $> ./vendor/bin/sail php artisan migrate
 - $> ./vendor/bin/sail php artisan db:seed --class=AdminUserSeeder
-- $> npm run build
+- $> ./vendor/bin/sail npm install
+- $> ./vendor/bin/sail npm run build
 - Open http://localhost in your browser.
 
 Admin user credentials: 
