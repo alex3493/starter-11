@@ -210,7 +210,7 @@ const chatMessageItems = computed(() => props.messages.data.map((m) => {
 
             <pagination class="mt-6" :links="messages.links"/>
 
-            <NavLink :href="returnUrl || route('home')">Back to list</NavLink>
+            <NavLink :href="returnUrl || route('home')" class="mt-2 mb-4 text-lg">Back to list</NavLink>
         </div>
         <CreateOrUpdateMessage :show="showCreateModal" :chat="chat" :message="messageBeingEdited"
                                @close="onMessageModalClose"/>
