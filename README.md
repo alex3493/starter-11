@@ -15,7 +15,7 @@ TBC...
 - $> ./vendor/bin/sail up -d
 - $> ./vendor/bin/sail php artisan migrate
 - $> ./vendor/bin/sail php artisan db:seed --class=AdminUserSeeder
-- $> ./vendor/bin/sail npm run build
+- $> npm run build
 - Open http://localhost in your browser.
 
 Admin user credentials: 
