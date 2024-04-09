@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-class ChatTest extends TestCase
+class ChatClientTest extends TestCase
 {
     use RefreshDatabase;
 
