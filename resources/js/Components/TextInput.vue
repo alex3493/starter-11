@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import ChatModel from "@/Models/ChatModel";
 
 const props = withDefaults(defineProps<{
   placeholder?: string
