@@ -9,7 +9,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import ChatModel from "@/Models/ChatModel";
-import {computed, watch} from "vue";
+import {computed, watch, ref, nextTick} from "vue";
 
 const props = defineProps<{
   show?: boolean,
@@ -26,9 +26,14 @@ const form = useForm({
   topic: ''
 })
 
+const topicInput = ref<HTMLInputElement | null>(null);
+
 watch(props, value => {
   if (value.chat) {
     form.topic = value.chat.topic
+  }
+  if (value.show) {
+    nextTick(() => topicInput.value?.focus())
   }
 })
 
@@ -88,9 +93,9 @@ const clearErrors = (field: any) => {
                     id="topic"
                     type="text"
                     class="mt-1 block w-full"
+                    ref="topicInput"
                     v-model="form.topic"
                     required
-                    autofocus
                     autocomplete="name"
                     @update:model-value="clearErrors('topic')"
                 />

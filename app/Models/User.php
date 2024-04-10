@@ -61,4 +61,14 @@ class User extends Authenticatable
     {
         return $this->chats->contains($roomId);
     }
+
+    /**
+     * Hardcode super-admin email, we keep it simple.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->email === 'admin@starter.loc';
+    }
 }
