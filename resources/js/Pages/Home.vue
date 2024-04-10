@@ -191,7 +191,7 @@ const chatItems = computed(() => props.chats.data.map(ch => new ChatModel(ch)))
       <div class="flex items-center justify-normal mb-6">
         <TextInput v-model="searchQuery" placeholder="Search in topics, messages or users..." class="mr-1 w-96"/>
         <SecondaryButton @click="searchQuery=''" class="ml-1 mr-1">Reset Search</SecondaryButton>
-        <SecondaryButton @click="showCreateModal=true" class="ml-1 mr-1">Create</SecondaryButton>
+        <SecondaryButton @click="showCreateModal=true" class="ml-1 mr-1">Create Chat</SecondaryButton>
       </div>
 
       <div class="bg-white rounded-md shadow overflow-x-auto">
