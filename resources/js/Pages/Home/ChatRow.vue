@@ -17,7 +17,6 @@ const props = defineProps<{
 
 const users = computed(() => {
     if (props.chat) {
-        console.log('***** users getter', props.chat.users)
         return props.chat.users
     }
     return []

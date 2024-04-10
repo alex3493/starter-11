@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
 // We are calling channel auth from both Laravel UI and mobile app.
@@ -20,8 +21,8 @@ Broadcast::channel('chat.updates.{id}', function () {
 });
 
 // Presence channel.
-Broadcast::channel('chat.{roomId}', function ($user, $roomId) {
-    if ($user->hasJoinedRoom($roomId)) {
+Broadcast::channel('chat.{roomId}', function (User $user, $roomId) {
+    if ($user->isSuperAdmin() || $user->hasJoinedRoom($roomId)) {
         return $user->toArray();
     }
 });

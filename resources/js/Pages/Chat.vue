@@ -45,10 +45,8 @@ const deleteForm = useForm({
 })
 
 const deleteMessage = (message: ChatMessageModel) => {
-  console.log('***** deleteMessage', message)
-
   if (!deleteForm.processing) {
-    console.log('***** Deleting!')
+    console.log(`Deleting message ${message.id} from chat ${message.chat.id}`)
     deleteForm.delete(`/chat/${message.chat.id}/message/${message.id}`, {
       preserveScroll: true
     })
@@ -74,16 +72,12 @@ const refreshData = (search: string | undefined = undefined) => {
 }
 
 watch(searchQuery, value => {
-  console.log('***** Searching for:', value)
-
   search(value)
 })
 
 const search = debounce((value: string) => {
   refreshData(value)
 }, 500)
-
-console.log('***** Configure Pusher')
 
 const channel = window.Echo.join(`chat.${props.chat.id}`).pusher.channels.channels[`presence-chat.${props.chat.id}`]
 
@@ -104,10 +98,10 @@ class MessageIdWrapper {
 }
 
 onMounted(() => {
-  console.log('***** Binding events - onMounted')
+  console.log('Binding events - onMounted')
 
   channel.bind('message_added', (e: ChatMessageModel) => {
-    console.log('***** message_added *****', e)
+    // console.log('***** message_added *****', e)
 
     if (!props.messages.links[0].url) {
       // Normally the same user shouldn't be logged in on multiple devices.
@@ -121,7 +115,7 @@ onMounted(() => {
   })
 
   channel.bind('message_updated', (e: ChatMessageModel) => {
-    console.log('***** message_updated *****', e)
+    // console.log('***** message_updated *****', e)
 
     const index = props.messages.data.findIndex((message: ChatMessageModel) => {
       return message.id === e.id
@@ -134,7 +128,7 @@ onMounted(() => {
       // reload message from API (e.g. for permissions update), we can
       // call the route below...
       // window.axios.get(`/message/${e.id}/read`).then((response: any) => {
-      //     console.log('***** Message read response', response)
+      //     console.log('Message read response', response)
       //
       //     if (response.status === 200) {
       //         props.messages.data[index] = new ChatMessageModel(response.data);
@@ -146,16 +140,14 @@ onMounted(() => {
   })
 
   channel.bind('message_deleted', (e: MessageIdWrapper) => {
-    console.log('***** message_deleted *****', e)
+    // console.log('***** message_deleted *****', e)
 
     deletedMessageIds.value.push(e.messageId)
-
-    console.log('***** DELETED MESSAGE IDS', deletedMessageIds.value)
   })
 })
 
 onBeforeUnmount(() => {
-  console.log('***** Unbinding events - onBeforeUnmount')
+  console.log('Unbinding events - onBeforeUnmount')
 
   channel.unbind('message_added')
   channel.unbind('message_updated')

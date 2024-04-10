@@ -8,13 +8,13 @@ use App\Models\User;
 class ChatPolicy
 {
     /**
-     * @param  User  $user
-     * @param  Chat  $chat
+     * @param User $user
+     * @param Chat $chat
      * @return bool
      */
     public function listMessages(User $user, Chat $chat): bool
     {
-        if ($this->isSuperAdmin($user)) {
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
@@ -22,7 +22,7 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
+     * @param User $user
      * @return bool
      */
     public function create(User $user): bool
@@ -31,13 +31,13 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
-     * @param  Chat  $chat
+     * @param User $user
+     * @param Chat $chat
      * @return bool
      */
     public function update(User $user, Chat $chat): bool
     {
-        if ($this->isSuperAdmin($user)) {
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
@@ -48,8 +48,8 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
-     * @param  Chat  $chat
+     * @param User $user
+     * @param Chat $chat
      * @return bool
      */
     public function join(User $user, Chat $chat): bool
@@ -58,8 +58,8 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
-     * @param  Chat  $chat
+     * @param User $user
+     * @param Chat $chat
      * @return bool
      */
     public function leave(User $user, Chat $chat): bool
@@ -68,14 +68,14 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
-     * @param  Chat  $chat
+     * @param User $user
+     * @param Chat $chat
      * @return bool
      */
     public function addMessage(User $user, Chat $chat): bool
     {
         // Super admin can add messages to any chat.
-        if ($this->isSuperAdmin($user)) {
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
@@ -83,23 +83,19 @@ class ChatPolicy
     }
 
     /**
-     * @param  User  $user
-     * @param  Chat|null $chat
+     * @param User $user
+     * @param Chat|null $chat
      * @return bool
      */
     public function delete(User $user, ?Chat $chat = null): bool
     {
         // Super admin can delete any chat.
-        if ($this->isSuperAdmin($user)) {
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
         $users = $chat->users;
-        return count($users) === 1 && $users[0]->id === $user->id;
-    }
 
-    private function isSuperAdmin(User $user): bool
-    {
-        return $user->email === 'admin@starter.loc';
+        return count($users) === 1 && $users[0]->id === $user->id;
     }
 }

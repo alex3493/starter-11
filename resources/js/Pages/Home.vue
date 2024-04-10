@@ -46,10 +46,8 @@ const refreshData = (search: string | undefined = undefined) => {
 }
 
 const joinChat = (chat: ChatModel) => {
-  console.log('***** joinChat', chat)
-
   if (!actionForm.processing) {
-    console.log('***** Joining!')
+    console.log(`Joining chat ${chat.id}`)
     actionForm.put(`/chat/${chat.id}/join`, {
       preserveScroll: true
     })
@@ -57,10 +55,8 @@ const joinChat = (chat: ChatModel) => {
 }
 
 const leaveChat = (chat: ChatModel) => {
-  console.log('***** leaveChat', chat)
-
   if (!actionForm.processing) {
-    console.log('***** Leaving!')
+    console.log(`Leaving chat ${chat.id}`)
     actionForm.put(`/chat/${chat.id}/leave`, {
       preserveScroll: true
     })
@@ -77,10 +73,8 @@ const actionForm = useForm({
 })
 
 const deleteChat = (chat: ChatModel) => {
-  console.log('***** deleteChat', chat)
-
   if (!actionForm.processing) {
-    console.log('***** Deleting!')
+    console.log(`Deleting chat ${chat.id}`)
     actionForm.delete(`/chat/${chat.id}`, {
       preserveScroll: true
     })
@@ -93,16 +87,12 @@ const onChatModalClose = () => {
 }
 
 watch(searchQuery, value => {
-  console.log('***** Searching for:', value)
-
   search(value)
 })
 
 const search = debounce((value: string) => {
   refreshData(value)
 }, 500)
-
-console.log('***** Configure Pusher')
 
 const channel = window.Echo.private('chat.updates').pusher.channels.channels['private-chat.updates']
 
@@ -129,10 +119,10 @@ class ChatIdWrapper {
 }
 
 onMounted(() => {
-  console.log('***** Binding events - onMounted')
+  console.log('Binding events - onMounted')
 
   channel.bind('chat_created', (e: ChatModel) => {
-    console.log('***** chat_created *****', e)
+    // console.log('***** chat_created *****', e)
 
     if (!props.chats.links[0].url) {
       // Normally the same user shouldn't be logged in on multiple devices.
@@ -146,7 +136,7 @@ onMounted(() => {
   })
 
   channel.bind('chat_updated', (e: ChatModel) => {
-    console.log('***** chat_updated *****', e)
+    // console.log('***** chat_updated *****', e)
 
     const index = props.chats.data.findIndex((chat: ChatModel) => {
       return chat.id === e.id
@@ -154,7 +144,7 @@ onMounted(() => {
 
     if (index >= 0) {
       window.axios.get(`/chat/${e.id}/read`).then((response: any) => {
-        console.log('***** Chat read response', response)
+        // console.log('Chat item response', response)
 
         if (response.status === 200) {
           props.chats.data[index] = new ChatModel(response.data);
@@ -166,7 +156,7 @@ onMounted(() => {
   })
 
   channel.bind('chat_deleted', (e: ChatIdWrapper) => {
-    console.log('***** chat_deleted *****', e)
+    // console.log('***** chat_deleted *****', e)
 
     deletedChatIds.value.push(e.chatId)
   })
@@ -178,7 +168,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  console.log('***** Unbinding events - onBeforeUnmount')
+  console.log('Unbinding events - onBeforeUnmount')
 
   channel.unbind('chat_created')
   channel.unbind('chat_updated')
