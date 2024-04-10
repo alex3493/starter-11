@@ -49,7 +49,7 @@ const submit = () => {
         form.message = ''
       },
       onError(errors) {
-        console.log('***** Update errors', errors)
+        console.log('Message update errors', errors)
       }
     })
   } else {
@@ -60,7 +60,7 @@ const submit = () => {
         form.message = ''
       },
       onError(errors) {
-        console.log('***** Create errors', errors)
+        console.log('Message create errors', errors)
       }
     })
   }

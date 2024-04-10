@@ -47,7 +47,7 @@ const submit = () => {
         form.topic = ''
       },
       onError(errors) {
-        console.log('***** Update errors', errors)
+        console.log('Chat update errors', errors)
       }
     })
   } else {
@@ -58,7 +58,7 @@ const submit = () => {
         form.topic = ''
       },
       onError(errors) {
-        console.log('***** Create errors', errors)
+        console.log('Chat create errors', errors)
       }
     })
   }
