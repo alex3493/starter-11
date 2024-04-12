@@ -94,10 +94,6 @@ const search = debounce((value: string) => {
   refreshData(value)
 }, 500)
 
-const channel = window.Echo.private('chat.updates').pusher.channels.channels['private-chat.updates']
-
-// let channel = window.Pusher.channels['private-chat.updates']
-
 const deletedChatIds = ref<any[]>([])
 
 const isChatDeleted = (chatId: string | number): boolean => {
@@ -105,9 +101,6 @@ const isChatDeleted = (chatId: string | number): boolean => {
     return id.toString() === chatId.toString()
   }) >= 0
 }
-
-// TODO: Documented version doesn't work...
-// let coreChannel = window.Echo.private('chat.updates');
 
 // TODO: move it to dedicated model TS file.
 class ChatIdWrapper {
@@ -121,59 +114,45 @@ class ChatIdWrapper {
 onMounted(() => {
   console.log('Binding events - onMounted')
 
-  channel.bind('chat_created', (e: ChatModel) => {
-    // console.log('***** chat_created *****', e)
-
-    if (!props.chats.links[0].url) {
-      // Normally the same user shouldn't be logged in on multiple devices.
-      // However, when it's the case, we do not updated table if a new chat
-      // was added by current user from another device.
-      // TODO: we have to find a solution!
-      if (currentUserId !== e.users[0].id) {
-        refreshData()
-      }
-    }
-  })
-
-  channel.bind('chat_updated', (e: ChatModel) => {
-    // console.log('***** chat_updated *****', e)
-
-    const index = props.chats.data.findIndex((chat: ChatModel) => {
-      return chat.id === e.id
-    })
-
-    if (index >= 0) {
-      window.axios.get(`/chat/${e.id}/read`).then((response: any) => {
-        // console.log('Chat item response', response)
-
-        if (response.status === 200) {
-          props.chats.data[index] = new ChatModel(response.data);
-        } else {
-          console.log(`Error reading chat ${e.id}`)
+  window.Echo.private('chat.updates')
+      .on('chat_created', (e: ChatModel) => {
+        console.log('***** Chat created', e)
+        if (!props.chats.links[0].url) {
+          // Normally the same user shouldn't be logged in on multiple devices.
+          // However, when it's the case, we do not updated table if a new chat
+          // was added by current user from another device.
+          // TODO: we have to find a solution!
+          if (currentUserId !== e.users[0].id) {
+            refreshData()
+          }
         }
       })
-    }
-  })
+      .on('chat_updated', (e: ChatModel) => {
+        console.log('***** Chat updated', e)
+        const index = props.chats.data.findIndex((chat: ChatModel) => {
+          return chat.id === e.id
+        })
 
-  channel.bind('chat_deleted', (e: ChatIdWrapper) => {
-    // console.log('***** chat_deleted *****', e)
+        if (index >= 0) {
+          window.axios.get(`/chat/${e.id}/read`).then((response: any) => {
+            // console.log('Chat item response', response)
 
-    deletedChatIds.value.push(e.chatId)
-  })
-
-  // TODO: Documented version doesn't work...
-  // coreChannel.listen('chat_updated', (e: ChatModel) => {
-  //     console.log('***** Core listener!', e)
-  // });
+            if (response.status === 200) {
+              props.chats.data[index] = new ChatModel(response.data);
+            } else {
+              console.log(`Error reading chat ${e.id}`)
+            }
+          })
+        }
+      })
+      .on('chat_deleted', (e: ChatIdWrapper) => {
+        console.log('***** Chat deleted', e)
+        deletedChatIds.value.push(e.chatId)
+      })
 })
 
 onBeforeUnmount(() => {
   console.log('Unbinding events - onBeforeUnmount')
-
-  channel.unbind('chat_created')
-  channel.unbind('chat_updated')
-  channel.unbind('chat_deleted')
-
   window.Echo.leaveChannel('private-chat.updates')
 })
 

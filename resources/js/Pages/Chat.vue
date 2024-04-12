@@ -13,6 +13,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import CreateOrUpdateMessage from "@/Pages/Chat/CreateOrUpdateMessage.vue";
 import {onBeforeUnmount, onMounted} from "vue";
 import debounce from "lodash/debounce";
+import UserModel from "@/Models/User";
 
 const props = defineProps<{
   auth: any,
@@ -79,8 +80,6 @@ const search = debounce((value: string) => {
   refreshData(value)
 }, 500)
 
-const channel = window.Echo.join(`chat.${props.chat.id}`).pusher.channels.channels[`presence-chat.${props.chat.id}`]
-
 const deletedMessageIds = ref<any[]>([])
 
 const isMessageDeleted = (messageId: string | number): boolean => {
@@ -100,59 +99,56 @@ class MessageIdWrapper {
 onMounted(() => {
   console.log('Binding events - onMounted')
 
-  channel.bind('message_added', (e: ChatMessageModel) => {
-    // console.log('***** message_added *****', e)
+  window.Echo.join(`chat.${props.chat.id}`)
+      .joining((user: UserModel) => {
+        console.log('***** Joining', user)
+      })
+      .leaving((user: UserModel) => {
+        console.log('***** Leaving', user)
+      })
+      .on('message_added', (e: ChatMessageModel) => {
+        console.log('***** Message added', e)
+        if (!props.messages.links[0].url) {
+          // Normally the same user shouldn't be logged in on multiple devices.
+          // However, when it's the case, we do not updated table if a new message
+          // was added by current user from another device.
+          // TODO: we have to find a solution!
+          if (currentUserId !== e.user.id) {
+            refreshData()
+          }
+        }
+      })
+      .on('message_updated', (e: ChatMessageModel) => {
+        console.log('***** Message updated', e)
+        const index = props.messages.data.findIndex((message: ChatMessageModel) => {
+          return message.id === e.id
+        })
 
-    if (!props.messages.links[0].url) {
-      // Normally the same user shouldn't be logged in on multiple devices.
-      // However, when it's the case, we do not updated table if a new message
-      // was added by current user from another device.
-      // TODO: we have to find a solution!
-      if (currentUserId !== e.user.id) {
-        refreshData()
-      }
-    }
-  })
-
-  channel.bind('message_updated', (e: ChatMessageModel) => {
-    // console.log('***** message_updated *****', e)
-
-    const index = props.messages.data.findIndex((message: ChatMessageModel) => {
-      return message.id === e.id
-    })
-
-    if (index >= 0) {
-      props.messages.data[index].message = e.message
-      // There is no need to get back to API and read updated message.
-      // Currently, we only update message text. However, if we have to
-      // reload message from API (e.g. for permissions update), we can
-      // call the route below...
-      // window.axios.get(`/message/${e.id}/read`).then((response: any) => {
-      //     console.log('Message read response', response)
-      //
-      //     if (response.status === 200) {
-      //         props.messages.data[index] = new ChatMessageModel(response.data);
-      //     } else {
-      //         console.log(`Error reading chat ${e.id}`)
-      //     }
-      // })
-    }
-  })
-
-  channel.bind('message_deleted', (e: MessageIdWrapper) => {
-    // console.log('***** message_deleted *****', e)
-
-    deletedMessageIds.value.push(e.messageId)
-  })
+        if (index >= 0) {
+          props.messages.data[index].message = e.message
+          // There is no need to get back to API and read updated message.
+          // Currently, we only update message text. However, if we have to
+          // reload message from API (e.g. for permissions update), we can
+          // call the route below...
+          // window.axios.get(`/message/${e.id}/read`).then((response: any) => {
+          //     console.log('Message read response', response)
+          //
+          //     if (response.status === 200) {
+          //         props.messages.data[index] = new ChatMessageModel(response.data);
+          //     } else {
+          //         console.log(`Error reading chat ${e.id}`)
+          //     }
+          // })
+        }
+      })
+      .on('message_deleted', (e: MessageIdWrapper) => {
+        console.log('***** Message deleted', e)
+        deletedMessageIds.value.push(e.messageId)
+      })
 })
 
 onBeforeUnmount(() => {
   console.log('Unbinding events - onBeforeUnmount')
-
-  channel.unbind('message_added')
-  channel.unbind('message_updated')
-  channel.unbind('message_deleted')
-
   window.Echo.leave(`chat.${props.chat.id}`)
 })
 
