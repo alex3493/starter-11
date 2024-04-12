@@ -82,10 +82,14 @@ const search = debounce((value: string) => {
 
 const deletedMessageIds = ref<any[]>([])
 
+const connectedUsers = ref<UserModel[]>([])
+
 const isMessageDeleted = (messageId: string | number): boolean => {
-  return deletedMessageIds.value.findIndex((id: string | number) => {
-    return id.toString() === messageId.toString()
-  }) >= 0
+  return deletedMessageIds.value.findIndex((id: string | number) => id.toString() === messageId.toString()) >= 0
+}
+
+const isUserConnected = (user: UserModel) => {
+  return connectedUsers.value.findIndex((u: UserModel) => u.id.toString() === user.id.toString()) >= 0
 }
 
 class MessageIdWrapper {
@@ -100,11 +104,22 @@ onMounted(() => {
   console.log('Binding events - onMounted')
 
   window.Echo.join(`chat.${props.chat.id}`)
+      .here((users: UserModel[]) => {
+        console.log('***** Here', users)
+        connectedUsers.value = users
+      })
       .joining((user: UserModel) => {
         console.log('***** Joining', user)
+        if (connectedUsers.value.findIndex(u => u.id === user.id) === -1) {
+          connectedUsers.value.push(user)
+        }
       })
       .leaving((user: UserModel) => {
         console.log('***** Leaving', user)
+        let index = connectedUsers.value.findIndex(u => u.id === user.id)
+        if (index >= 0) {
+          connectedUsers.value.splice(index, 1)
+        }
       })
       .on('message_added', (e: ChatMessageModel) => {
         console.log('***** Message added', e)
@@ -192,7 +207,8 @@ const chatMessageItems = computed(() => props.messages.data.map((m) => {
                 :messageDeleted="isMessageDeleted(message.id)"
                 :deleteButtonDisabled="deleteForm.processing"
                 @edit="editMessage"
-                @delete="deleteMessage"/>
+                @delete="deleteMessage"
+                :showUserConnected="isUserConnected(message.user)"/>
           </tr>
           <tr v-if="chatMessageItems.length === 0">
             <td class="px-6 py-4 border-t text-center" colspan="4">No messages found.</td>
