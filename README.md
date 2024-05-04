@@ -12,8 +12,10 @@ Features:
 - View currently registered user devices.
 - View chat list and create chat.
 - Join and leave chats.
-- Enter joined chat, view and add chat messages.
-- Delete own messages.
+- Enter joined chat, view and add chat messages. *Administrator can enter in all chats*.
+- Delete own messages. *Administrator can edit and delete all messages*.
+- Edit own chat topic. *Administrator can edit all chats*.
+- Delete own chats. *Administrator can delete all chats*.
 
 ## How to install
 
