@@ -1,9 +1,19 @@
 ## About the project
 
-Starter-11 is a basic multi-user chat project created with [Laravel 11](https://laravel.com). It also serves as API for a mobile IOS application.
+Starter-11 is a basic multi-user chat project created with [Laravel 11](https://laravel.com). It also serves as API for a [mobile IOS application](https://github.com/alex3493/starter-11).
 Chat and message events are published via [Reverb server](https://reverb.laravel.com/), so that all clients are updated automatically.
 
-TBC...
+Features:
+- Register user account. All registered users have *user* role. Administrator should be already created when you finish installation (see below).
+- Login to user account. User can login from multiple devices, a dedicated access token will be created for each device.
+- Logout from current device.
+- Logout from all devices (sign out).
+- View and update user profile.
+- View currently registered user devices.
+- View chat list and create chat.
+- Join and leave chats.
+- Enter joined chat, view and add chat messages.
+- Delete own messages.
 
 ## How to install
 
