@@ -5,7 +5,7 @@ Chat and message events are published via [Reverb server](https://reverb.laravel
 
 Features:
 - Register user account. All registered users have *user* role. Administrator should be already created when you finish installation (see below).
-- Login to user account. User can login from multiple devices, a dedicated access token will be created for each device.
+- Login to user account. User can log in from multiple devices, a dedicated access token will be created for each device.
 - Logout from current device.
 - Logout from all devices (sign out).
 - View and update user profile.
@@ -29,6 +29,7 @@ Features:
 - $> ./vendor/bin/sail php artisan db:seed --class=AdminUserSeeder
 - $> ./vendor/bin/sail npm install
 - $> ./vendor/bin/sail npm run build
+- Run tests: $> ./vendor/bin/sail phpunit
 - Open http://localhost in your browser.
 - Login as Admin (see credentials below) or register a new user.
 
